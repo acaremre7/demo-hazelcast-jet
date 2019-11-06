@@ -1,4 +1,4 @@
-package com.cgi.hazelcastdemo;
+package com.ea.hazelcastdemo;
 import org.junit.Test;
 
 class HazelcastDemoApplicationTests {

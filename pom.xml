@@ -8,7 +8,7 @@
 		<version>2.0.0.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.cgi</groupId>
+	<groupId>com.ea</groupId>
 	<artifactId>hazelcast-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>hazelcast-demo</name>

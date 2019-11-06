@@ -1,4 +1,4 @@
-package com.cgi.hazelcastdemo.service;
+package com.ea.hazelcastdemo.service;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EventJournalConfig;

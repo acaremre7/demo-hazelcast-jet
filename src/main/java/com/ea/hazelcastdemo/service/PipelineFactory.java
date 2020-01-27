@@ -23,6 +23,8 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 class PipelineFactory {
 
+    private PipelineFactory(){}
+
     private static ClientConfig clientConfig = new ClientConfig()
             .addFlakeIdGeneratorConfig(new ClientFlakeIdGeneratorConfig("idGenerator")
                     .setPrefetchCount(10)

@@ -2,24 +2,23 @@ package com.ea.hazelcastdemo.service;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.EventJournalConfig;
+import com.hazelcast.core.IMap;
 import com.hazelcast.jet.Jet;
 import com.hazelcast.jet.JetInstance;
 import com.hazelcast.jet.config.JetConfig;
+import com.hazelcast.jet.core.DAG;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 @Component
-public class ProducerService implements CommandLineRunner {
+public class OperatorService implements CommandLineRunner {
     private JetInstance instance;
 
     @Override
     public void run(String... args) {
-        System.out.println("Select \"0\" for batch operations, \"1\" for stream operations.");
+        System.out.println("Select \"0\" for batch operations, \"1\" for stream operations, \"2\" for DAG operations.");
         Scanner sc = new Scanner(System.in);
         switch (sc.next()) {
             case "0":
@@ -27,6 +26,9 @@ public class ProducerService implements CommandLineRunner {
                 break;
             case "1":
                 streamOperate();
+                break;
+            case "2":
+                dagOperate();
                 break;
             default:
                 run();
@@ -38,7 +40,7 @@ public class ProducerService implements CommandLineRunner {
         //Init jet instance
         instance = Jet.newJetInstance(new JetConfig().setHazelcastConfig(new Config()));
         try {
-            fillMap();
+            fillMap(1_000_000);
             //Attaching jobs
             instance.newJob(PipelineFactory.getBatchPipeline1()).join();
             instance.newJob(PipelineFactory.getBatchPipeline2()).join();
@@ -80,14 +82,28 @@ public class ProducerService implements CommandLineRunner {
         //Run them
         jobThread.start();
         printThread.start();
-        fillMap();
+        fillMap(1_000_000);
     }
 
-    private void fillMap() {
+    private void dagOperate(){
+        instance = Jet.newJetInstance();
+        fillMap(100);
+        try {
+            instance.newJob(DAGFactory.getDAG()).join();
+            Map<Integer,Integer> resultMap = instance.getMap("integerIMap");
+            for(int i : resultMap.values()){
+                System.out.println(i);
+            }
+        }finally {
+            instance.shutdown();
+        }
+    }
+
+    public void fillMap(int size) {
         //Creating integer map with random values
         Map<Integer, Integer> integerMap = instance.getMap("integerIMap");
         Random rand = new Random();
-        for (int i = 0; i < 1_000_000; i++) {
+        for (int i = 0; i < size; i++) {
             integerMap.put(i, rand.nextInt(100));
         }
     }
